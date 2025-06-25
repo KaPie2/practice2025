@@ -1,10 +1,14 @@
-﻿namespace task02;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace task02;
 
 public class Student
 {
-    public string Name { get; set; }
-    public string Faculty { get; set; }
-    public List<int> Grades { get; set; }
+    public string? Name { get; set; }
+    public string? Faculty { get; set; }
+    public List<int>? Grades { get; set; }
 }
 
 public class StudentService
@@ -13,23 +17,28 @@ public class StudentService
 
     public StudentService(List<Student> students) => _students = students;
 
-    // 1. Возвращает студентов указанного факультета
     public IEnumerable<Student> GetStudentsByFaculty(string faculty)
-    =>  реализация;
+        => _students.Where(s => s.Faculty == faculty);
 
 
-    // 2. Возвращает студентов со средним баллом >= minAverageGrade
-    public IEnumerable<Student> GetStudentsWithMinAverageGrade(double minAverageGrade) => реализация;
+    public IEnumerable<Student> GetStudentsWithMinAverageGrade(double minAverageGrade)
+        => _students.Where(s => s.Grades.Count > 0 && s.Grades.Average() >= minAverageGrade);
 
-    // 3. Возвращает студентов, отсортированных по имени (A-Z)
     public IEnumerable<Student> GetStudentsOrderedByName()
-        => реализация;
+        => _students.OrderBy(s => s.Name);
 
-    // 4. Группировка по факультету
     public ILookup<string, Student> GroupStudentsByFaculty()
-        => реализация;
+        => _students.ToLookup(s => s.Faculty);
 
-    // 5. Находит факультет с максимальным средним баллом
     public string GetFacultyWithHighestAverageGrade()
-        => реализация;
+        => _students
+        .Where(s => s.Grades.Count > 0)
+        .GroupBy(s => s.Faculty)
+        .Select(p => new
+        {
+            Faculty = p.Key,
+            AverageGradesFaculty = p.Average(s => s.Grades.Average())
+        })
+        .OrderByDescending(f => f.AverageGradesFaculty)
+        .First().Faculty;
 }
