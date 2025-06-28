@@ -13,19 +13,26 @@ public class Cruiser : ISpaceship
 {
     public int Speed { get; } = 50;
     public int FirePower { get; } = 100;
+    public int CurrentAngle = 0;
+    public int PositionX = 0;
+    public int PositionY = 0;
+    public int RemainingRockets = 10;
     public void MoveForward()
     {
-        Console.WriteLine($"Крейсер движется вперед со скоростью {Speed}!");
+        double AngleRadians = CurrentAngle * Math.PI / 180;
+        PositionX += (int)Math.Round(Speed * Math.Cos(AngleRadians));
+        PositionY += (int)Math.Round(Speed * Math.Sin(AngleRadians));
     }
 
     public void Rotate(int angle)
     {
-        Console.WriteLine($"Крейсер совершил поворот на {angle} градусов");
+        CurrentAngle = (CurrentAngle + angle) % 360;
+        if (CurrentAngle < 0) CurrentAngle += 360;
     }
 
     public void Fire()
     {
-        Console.WriteLine($"БА-БАХ! Нанесен урон {FirePower} единиц");
+        if (RemainingRockets > 0) RemainingRockets--;
     }
 }
 
@@ -33,18 +40,25 @@ public class Fighter : ISpaceship
 {
     public int Speed { get; } = 100;
     public int FirePower { get; } = 50;
+    public int CurrentAngle = 0;
+    public int PositionX = 0;
+    public int PositionY = 0;
+    public int RemainingRockets = 10;
     public void MoveForward()
     {
-        Console.WriteLine($"Истребитель движется вперед со скоростью {Speed}!");
+        double AngleRadians = CurrentAngle * Math.PI / 180;
+        PositionX += (int)(Speed * Math.Cos(AngleRadians));
+        PositionY += (int)(Speed * Math.Sin(AngleRadians));
     }
 
     public void Rotate(int angle)
     {
-        Console.WriteLine($"Истребитель совершил поворот на {angle} градусов");
+        CurrentAngle = (CurrentAngle + angle) % 360;
+        if (CurrentAngle < 0) CurrentAngle += 360;
     }
 
     public void Fire()
     {
-        Console.WriteLine($"ТЫЩЬ! Нанесен урон {FirePower} единиц");
+        if (RemainingRockets > 0) RemainingRockets--;
     }
 }
