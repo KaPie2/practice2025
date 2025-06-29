@@ -11,7 +11,7 @@ public class TestClass
     public int Property { get; set; }
 
     public void Method() { }
-    public int MethodWithParams(string input, int count) => 0;
+    public void MethodWithParams(string input, int count) { }
 }
 
 [Serializable]
@@ -26,6 +26,7 @@ public class ClassAnalyzerTests
         var methods = analyzer.GetPublicMethods();
 
         Assert.Contains("Method", methods);
+        Assert.Contains("MethodWithParams", methods);
     }
 
     [Fact]
