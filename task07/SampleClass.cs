@@ -39,10 +39,10 @@ public static class ReflectionHelper
 {
     public static void PrintTypeInfo(Type type)
     {
-        var display_name = type.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault();
+        var display_name = type.GetCustomAttribute<DisplayNameAttribute>();
         if (display_name != null) Console.WriteLine(display_name.DisplayName);
 
-        var version = type.GetCustomAttributes<VersionAttribute>().FirstOrDefault();
+        var version = type.GetCustomAttribute<VersionAttribute>();
         if (version != null) Console.WriteLine($"{version.Major}.{version.Minor}");
 
         foreach (var method in type.GetMethods())
