@@ -42,4 +42,28 @@ public class AttributeReflectionTests
         Assert.Equal(1, attribute.Major);
         Assert.Equal(0, attribute.Minor);
     }
+
+    [Fact]
+    public void PrintTypeInfo_OutputsCorrectInformation()
+    {
+        var type = typeof(SampleClass);
+        var consoleOutput = new StringWriter();
+        Console.SetOut(consoleOutput);
+
+        ReflectionHelper.PrintTypeInfo(type);
+        var output = consoleOutput.ToString().Trim();
+
+        var expectedLines = new[]
+        {
+            "Пример класса",
+            "1.0",
+            "TestMethod: Тестовый метод",
+            "Number: Числовое свойство"
+        };
+
+        foreach (var line in expectedLines)
+        {
+            Assert.Contains(line, output);
+        }
+    }
 }

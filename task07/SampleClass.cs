@@ -39,22 +39,22 @@ public static class ReflectionHelper
 {
     public static void PrintTypeInfo(Type type)
     {
-        var display_name = type.GetCustomAttribute<DisplayNameAttribute>();
-        if (display_name != null) Console.WriteLine(display_name.DisplayName);
+        var displayName = type.GetCustomAttribute<DisplayNameAttribute>();
+        if (displayName != null) Console.WriteLine(displayName.DisplayName);
 
         var version = type.GetCustomAttribute<VersionAttribute>();
         if (version != null) Console.WriteLine($"{version.Major}.{version.Minor}");
 
         foreach (var method in type.GetMethods())
         {
-            var method_attr = method.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault();
-            if (method_attr != null) Console.WriteLine($"{method.Name}: {method_attr.DisplayName}");
+            var methodAttr = method.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault();
+            if (methodAttr != null) Console.WriteLine($"{method.Name}: {methodAttr.DisplayName}");
         }
 
         foreach (var property in type.GetProperties())
         {
-            var property_attr = property.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault();
-            if (property_attr != null) Console.WriteLine($"{property.Name}: {property_attr.DisplayName}");
+            var propertyAttr = property.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault();
+            if (propertyAttr != null) Console.WriteLine($"{property.Name}: {propertyAttr.DisplayName}");
         }
     }
 }
