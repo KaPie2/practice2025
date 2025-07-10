@@ -5,7 +5,7 @@ namespace task13;
 
 public class Subject
 {
-    public string Name { get; set; }
+    public string? Name { get; set; }
     public int Grade { get; set; }
 }
 
@@ -23,7 +23,7 @@ public class CustomDateTimeConverter : JsonConverter<DateTime>
 {
     private readonly string format = "dd.MM.yyyy";
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        => DateTime.ParseExact(reader.GetString(), format, null);
+        => DateTime.ParseExact(reader.GetString()!, format, null);
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         => writer.WriteStringValue(value.ToString(format));
@@ -42,7 +42,7 @@ public static class StudentSerializer
         => JsonSerializer.Serialize(student, options);
 
     public static Student Deserialize(string json)
-        => JsonSerializer.Deserialize<Student>(json, options);
+        => JsonSerializer.Deserialize<Student>(json, options)!;
 
     public static void SaveToFile(string path, Student student)
     {
