@@ -7,30 +7,46 @@ public class DefiniteIntegral
 {
     public static double Solve(double a, double b, Func<double, double> function, double step, int threadsNumber)
     {
-        double totalResult = 0.0;
-        int cntSteps = (int)Math.Ceiling((b - a) / step);
-        double lengthPerThread = (b - a) / threadsNumber;
-        Barrier barrier = new Barrier(threadsNumber + 1);
+        int totalSteps = (int)Math.Ceiling((b - a) / step);
+        double[] partialSums = new double[threadsNumber];
 
-        for (int i = 0; i < threadsNumber; i++)
+        int stepsPerThread = totalSteps / threadsNumber;
+        int remainder = totalSteps % threadsNumber;
+
+        Parallel.For(0, threadsNumber, i =>
         {
-            double start = a + i * lengthPerThread;
-            double end = (i == threadsNumber - 1) ? b : start + lengthPerThread;
+            int startStep = i * stepsPerThread;
+            int endStep = startStep + stepsPerThread;
+            if (i == threadsNumber - 1)
+                endStep += remainder;
 
-            ThreadPool.QueueUserWorkItem(_ =>
+            double localSum = 0;
+
+            for (int j = startStep; j < endStep; j++)
             {
-                double sumOfAreas = 0.0;
-                for (double xStart = start; xStart < end; xStart += step)
-                {
-                    double xEnd = Math.Min(xStart + step, end);
-                    sumOfAreas += (function(xStart) + function(xEnd)) / 2 * (xEnd - xStart);
-                }
+                double xStart = a + j * step;
+                double xEnd = Math.Min(xStart + step, b);
+                localSum += (function(xStart) + function(xEnd)) / 2 * (xEnd - xStart);
+            }
 
-                Interlocked.Exchange(ref totalResult, totalResult + sumOfAreas);
-                barrier.SignalAndWait();
-            });
+            partialSums[i] = localSum;
+        });
+
+        double totalSum = 0;
+        foreach (var sum in partialSums)
+            totalSum += sum;
+
+        return totalSum;
+    }
+
+    public static double SolveSingleThread(double a, double b, Func<double, double> function, double step)
+    {
+        double sum = 0.0;
+        for (double x = a; x < b; x += step)
+        {
+            double xEnd = Math.Min(x + step, b);
+            sum += (function(x) + function(xEnd)) / 2 * (xEnd - x);
         }
-        barrier.SignalAndWait();
-        return totalResult;
+        return sum;
     }
 }
