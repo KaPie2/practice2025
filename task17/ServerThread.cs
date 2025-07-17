@@ -1,14 +1,20 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
+using task18;
 
 namespace task17;
 
 public class ServerThread
 {
     private readonly ConcurrentQueue<ICommand> _queue = new ConcurrentQueue<ICommand>();
+    private readonly IScheduler? _scheduler;
     private bool _running = false;
     private bool _softStopRequested = false;
     private Thread? _thread;
+    public ServerThread(IScheduler scheduler)
+    {
+        _scheduler = scheduler;
+    }
 
     public void Start()
     {
@@ -25,14 +31,18 @@ public class ServerThread
             if (_queue.TryDequeue(out ICommand? cmd))
             {
                 cmd.Execute();
+                continue;
             }
-            else
+            if (_scheduler!.HasCommand())
             {
-                if (_softStopRequested)
-                    _running = false;
-                else
-                    Thread.Sleep(50);
+                var cmdSch = _scheduler.Select();
+                cmdSch?.Execute();
+                continue;
             }
+            if (_softStopRequested)
+                _running = false;
+            else
+                Thread.Sleep(50);
         }
     }
 
@@ -84,4 +94,31 @@ public class SoftStopCommand : ICommand
             throw new InvalidOperationException("SoftStop должна выполняться в потоке обработки команд!");
         _serverThread.RequestSoftStop();
     }
+}
+
+public class LongRunningCommand : ICommand
+{
+    private readonly IScheduler _scheduler;
+    private int _stepsLeft;
+
+    public LongRunningCommand(IScheduler scheduler, int totalSteps)
+    {
+        _scheduler = scheduler;
+        _stepsLeft = totalSteps;
+    }
+
+    public void Execute()
+    {
+        if (_stepsLeft == 0) return;
+
+        Thread.Sleep(100);
+        _stepsLeft--;
+
+        if (_stepsLeft > 0)
+        {
+            _scheduler.Add(this);
+        }
+    }
+    public int StepsLeft => _stepsLeft;
+    public bool IsCompleted => _stepsLeft == 0;
 }
