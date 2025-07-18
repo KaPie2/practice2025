@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading;
+using System.Diagnostics;
 using task18;
 
 namespace task17;
@@ -101,6 +102,8 @@ public class LongRunningCommand : ICommand
     private readonly IScheduler _scheduler;
     private int _stepsLeft;
 
+    public List<long> StepExecutionTimesMs { get; } = new List<long>();
+
     public LongRunningCommand(IScheduler scheduler, int totalSteps)
     {
         _scheduler = scheduler;
@@ -111,7 +114,13 @@ public class LongRunningCommand : ICommand
     {
         if (_stepsLeft == 0) return;
 
+        var sw = Stopwatch.StartNew();
+
         Thread.Sleep(100);
+
+        sw.Stop();
+        StepExecutionTimesMs.Add(sw.ElapsedMilliseconds);
+
         _stepsLeft--;
 
         if (_stepsLeft > 0)
@@ -119,6 +128,7 @@ public class LongRunningCommand : ICommand
             _scheduler.Add(this);
         }
     }
+
     public int StepsLeft => _stepsLeft;
     public bool IsCompleted => _stepsLeft == 0;
 }
