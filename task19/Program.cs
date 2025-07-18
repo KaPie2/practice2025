@@ -37,7 +37,7 @@ class Program
         plt.Title("Выполнение TestCommand");
         plt.XLabel("Время (мс)");
         plt.YLabel("Количество команд");
-        plt.Add.Scatter(realTimes, commandNumbers.Select(x=>(double)x).ToArray());
+        plt.Add.Scatter(realTimes, commandNumbers.Select(x => (double)x).ToArray());
 
         plt.SavePng(@"C:\Users\pirog\practice2025\command_execution_plot.png", 600, 300);
 
