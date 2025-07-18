@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using task17;
+﻿using task17;
 using task18;
 using ScottPlot;
 
